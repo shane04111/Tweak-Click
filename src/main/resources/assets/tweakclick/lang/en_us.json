@@ -1,0 +1,20 @@
+{
+  "movementWillHold": "movementWillHold",
+  "movementWillHold.comment": "When onlySprintHoldAttack is enabled and tweakToolSwitch is also active, the attack key will be held while walking.",
+  "onlySprintHoldAttack": "onlySprintHoldAttack",
+  "onlySprintHoldAttack.comment": "The attack key will only be held while sprinting and tweakToolSwitch is enabled. It will not function while walking or when stopped.",
+  "diggerX": "diggerX",
+  "diggerX.comment": "Can only dig blocks with a different X coordinate when not sneaking",
+  "diggerZ": "diggerZ",
+  "diggerZ.comment": "Can only dig blocks with a different Z coordinate when not sneaking",
+  "flatDigger": "flatDigger",
+  "flatDigger.comment": "Which allowed you mine a flat road while digging stone by preventing digging of blocks under your feet while standing，sneak to dig blocks under you.",
+  "verticalDigger": "verticalDigger",
+  "verticalDigger.comment": "You can only dig vertically while sneaking, not sideways.\n§4This function has no effect when not sneaking.",
+  "removeCooldown": "removeBreakingCooldown",
+  "removeCooldown.comment": "Remove cooldown after break block (default is 5gt).",
+  "perimeterWallDigger": "perimeterWallDigger",
+  "perimeterWallDigger.comment": "Prevents player from mining underneath the block types\nspecified in the Perimeter Outline Blocks list",
+  "perimeterOutlineBlocks": "perimeterOutlineBlocks",
+  "perimeterOutlineBlock.comments": "The block types checked by the Perimeter Wall Digger tweak."
+}

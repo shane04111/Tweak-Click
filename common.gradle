@@ -1,0 +1,228 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.github.hierynomus.license'
+apply plugin: 'fabric-loom'
+apply plugin: 'com.replaymod.preprocess'
+
+int mcVersion = project.mcVersion
+version("v${project.mod_version}")
+
+preprocess {
+    tabIndentation = true
+}
+
+repositories {
+    maven {
+        url 'https://masa.dy.fi/maven'
+    }
+    maven {
+        url 'https://maven.terraformersmc.com/releases'
+    }
+    maven {
+        url 'https://www.cursemaven.com'
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+// list of (dependencyNotation -> should use modImplementation)
+def mod_dependencies = [
+        [(mcVersion >= 12100 ? 'com.github.sakura-ryoko:malilib:' : 'fi.dy.masa.malilib:') + "${project.malilib_version}", true],
+        [(mcVersion >= 12006 ? 'com.github.sakura-ryoko:tweakeroo:' : 'curse.maven:tweakeroo-297344:') + "${project.tweakeroo_file_id}", true],
+]
+
+// https://github.com/FabricMC/fabric-loader/issues/783
+configurations {
+    modRuntimeOnly.exclude group: 'net.fabricmc', module: 'fabric-loader'
+}
+configurations {
+    modImplementation.exclude group: 'io.github.prospector', module: 'modmenu'
+}
+
+base.archivesName = project.archives_base_name + '-mc' + project.minecraft_version
+
+dependencies {
+    // loom
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    mod_dependencies.forEach { item ->
+        def dependencyNotation = item[0]
+        def activatedInRuntime = item[1]
+        if (activatedInRuntime) {
+            modImplementation(dependencyNotation) {
+                exclude group: 'com.github.sakura-ryoko', module: 'malilib'
+            }
+        } else {
+            modCompileOnly(dependencyNotation) {
+                exclude group: 'com.github.sakura-ryoko', module: 'malilib'
+            }
+        }
+    }
+}
+
+def MIXIN_CONFIG_PATHS = ["${project.mod_id}.mixins.json"]
+String LANG_DIR = "assets/${project.mod_id}/lang"
+JavaVersion JAVA_COMPATIBILITY
+if (mcVersion >= 12005) {
+    JAVA_COMPATIBILITY = JavaVersion.VERSION_21
+} else if (mcVersion >= 11800) {
+    JAVA_COMPATIBILITY = JavaVersion.VERSION_17
+} else if (mcVersion >= 11700) {
+    JAVA_COMPATIBILITY = JavaVersion.VERSION_16
+} else {
+    JAVA_COMPATIBILITY = JavaVersion.VERSION_1_8
+}
+JavaVersion MIXIN_COMPATIBILITY_LEVEL = JAVA_COMPATIBILITY
+
+loom {
+    runConfigs.configureEach {
+        runDir "../../run"
+        vmArgs '-Dmixin.debug.export=true'
+    }
+    runConfigs.client {
+        // to make sure it generates all "Minecraft Client (:subproject_name)" applications
+        ideConfigGenerated = true
+    }
+    runs {
+        clientMixinAudit {
+            client()
+            ideConfigGenerated false
+        }
+    }
+}
+
+tasks.register("runProductionClient", JavaExec) {
+    dependsOn(tasks.remapJar)
+    classpath.from(configurations.productionRuntimeClient)
+    mainClass.set("net.fabricmc.loader.impl.launch.knot.KnotClient")
+    workingDir(file("run/client"))
+
+    doFirst {
+        classpath.from(loom.minecraftProvider.minecraftClientJar)
+        args(
+                "--assetIndex", loom.minecraftProvider.versionInfo.assetIndex().fabricId(loom.minecraftProvider.minecraftVersion()),
+                "--assetsDir", file("${loom.files.userCache}/assets").absolutePath,
+                "--gameDir", workingDir.absolutePath,
+                "--width", "1920",
+                "--height", "1080"
+        )
+        jvmArgs("-Dmixin.debug.export=true")
+        jvmArgs("-Dfabric.addMods=${configurations.productionRuntimeMods.files.join(File.pathSeparator)}${File.pathSeparator}${tasks.remapJar.archiveFile.get().asFile.absolutePath}")
+
+
+        if (Platform.CURRENT.operatingSystem.isMacOS()) {
+            jvmArgs("-XstartOnFirstThread")
+        }
+    }
+}
+
+remapJar {
+    remapperIsolation.set(true)
+}
+
+// See https://youtrack.jetbrains.com/issue/IDEA-296490
+// if IDEA complains about "Cannot resolve resource filtering of MatchingCopyAction" and you want to know why
+processResources {
+    inputs.property "id", project.mod_id
+    inputs.property "name", project.mod_name
+    inputs.property "version", project.version
+    inputs.property "minecraft_dependency", project.minecraft_dependency
+    inputs.property "malilib_dependency", project.malilib_dependency
+    inputs.property "mod_homepage", project.mod_homepage
+    inputs.property "mod_sources", project.mod_sources
+
+    filesMatching("fabric.mod.json") {
+        def valueMap = [
+                "id"                  : project.mod_id,
+                "name"                : project.mod_name,
+                "version"             : project.mod_version,
+                "minecraft_dependency": project.minecraft_dependency,
+                "malilib_dependency"  : project.malilib_dependency,
+                "mod_homepage"        : project.mod_homepage,
+                "mod_sources"         : project.mod_sources
+        ]
+        expand valueMap
+    }
+
+    MIXIN_CONFIG_PATHS.each { mixinConfigPath ->
+        filesMatching(mixinConfigPath) {
+            filter { s -> s.replace('{{COMPATIBILITY_LEVEL}}', "JAVA_${MIXIN_COMPATIBILITY_LEVEL.ordinal() + 1}") }
+        }
+    }
+}
+
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
+    if (JAVA_COMPATIBILITY <= JavaVersion.VERSION_1_8) {
+        // suppressed "source/target value 8 is obsolete and will be removed in a future release"
+        options.compilerArgs << '-Xlint:-options'
+    }
+}
+
+java {
+    sourceCompatibility = JAVA_COMPATIBILITY
+    targetCompatibility = JAVA_COMPATIBILITY
+
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+}
+
+//jar {
+//    from("../../LICENSE") {
+//        rename { "${it}_${project.archives_base_name}" }
+//    }
+//}
+
+// https://github.com/hierynomus/license-gradle-plugin
+license {
+    // use "gradle licenseFormat" to apply license headers
+    header = rootProject.file('HEADER.txt')
+    include '**/*.java'
+    skipExistingHeaders = true
+
+    headerDefinitions {
+        // ref: https://github.com/mathieucarbou/license-maven-plugin/blob/4c42374bb737378f5022a3a36849d5e23ac326ea/license-maven-plugin/src/main/java/com/mycila/maven/plugin/license/header/HeaderType.java#L48
+        // modification: add a newline at the end
+        SLASHSTAR_STYLE_NEWLINE {
+            firstLine = "/*"
+            beforeEachLine = " * "
+            endLine = " */" + System.lineSeparator()
+            afterEachLine = ""
+            skipLinePattern = null
+            firstLineDetectionPattern = "(\\s|\\t)*/\\*.*\$"
+            lastLineDetectionPattern = ".*\\*/(\\s|\\t)*\$"
+            allowBlankLines = false
+            isMultiline = true
+            padLines = false
+        }
+    }
+    mapping {
+        java = 'SLASHSTAR_STYLE_NEWLINE'
+    }
+    ext {
+        name = project.mod_name
+        author = 'Shane0411'
+        year = Calendar.getInstance().get(Calendar.YEAR).toString()
+    }
+}
+classes.dependsOn licenseFormatMain
+testClasses.dependsOn licenseFormatTest
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+            version = project.mod_version
+        }
+    }
+}

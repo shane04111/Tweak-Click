@@ -1,0 +1,20 @@
+{
+  "movementWillHold": "movementWillHold | 移動時持續攻擊",
+  "movementWillHold.comment": "當 僅疾跑時持續攻擊(onlySprintHoldAttack) 開啟\n且 工具自動選擇(tweakToolSwitch) 也啟用時，\n走路時也會持續按住攻擊鍵。",
+  "onlySprintHoldAttack": "onlySprintHoldAttack | 僅疾跑時持續攻擊",
+  "onlySprintHoldAttack.comment": "只有在疾跑且 工具自動選擇(tweakToolSwitch) 開啟時，才會持續按住攻擊鍵，走路或靜止不動時不會動作。",
+  "diggerX": "diggerX | X軸挖掘",
+  "diggerX.comment": "只有在未潛行時才能挖掘與自身 X 座標不同的方塊",
+  "diggerZ": "diggerZ | Z軸挖掘",
+  "diggerZ.comment": "只有在未潛行時才能挖掘與自身 Z 座標不同的方塊",
+  "flatDigger": "flatDigger | 平坦挖掘",
+  "flatDigger.comment": "只有在潛行時才能挖掘比自己低的方塊",
+  "verticalDigger": "verticalDigger | 垂直挖掘",
+  "verticalDigger.comment": "在潛行時只能垂直挖掘，不可挖掘側邊。\n§4不潛行時此功能無作用。",
+  "removeCooldown": "removeCooldown | 移除挖掘冷卻",
+  "removeCooldown.comment": "移除在非秒破方塊後的挖掘冷卻（預設是 5gt）",
+  "perimeterWallDigger": "perimeterWallDigger | 圍牆挖掘器",
+  "perimeterWallDigger.comment": "防止玩家在「圍牆輪廓方塊」清單中指定的方塊類型下方挖掘。",
+  "perimeterOutlineBlocks": "perimeterOutlineBlocks | 圍牆輪廓方塊",
+  "perimeterOutlineBlock.comments": "「圍牆挖掘器」功能所檢查的方塊類型。"
+}
