@@ -1,0 +1,92 @@
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+
+plugins {
+    id "java-library"
+    id "maven-publish"
+}
+
+base.archivesName = "${project.archives_base_name}-all"
+group = project.maven_group
+version = "v${project.mod_version}"
+
+def fabric_subprojects = project.parent.subprojects.findAll({
+    it.name != "fabricWrapper"
+})
+
+fabric_subprojects.collect {
+    evaluationDependsOn(":${it.name}")
+}
+
+jar {
+    // disable cache
+    outputs.upToDateWhen { false }
+
+    dependsOn(fabric_subprojects.collect {
+        it.tasks.remapJar
+    })
+
+    doFirst {
+        delete fileTree("build/tmp/submods/META-INF/jars")
+        copy {
+            from {
+                fabric_subprojects.collect {
+                    it.remapJar.outputs.files
+                }
+            }
+            into("build/tmp/submods/META-INF/jars")
+        }
+    }
+    from("${rootDir}/LICENSE")
+    from("build/tmp/submods")
+}
+
+processResources {
+    // disable cache
+    outputs.upToDateWhen { false }
+    filesMatching("fabric.mod.json") {
+        def valueMap = [
+                "mod_id"         : project.mod_id,
+                "mod_name"       : project.mod_name,
+                "mod_description": project.description,
+                "mod_version"    : project.version,
+                "mod_sources"    : project.mod_sources,
+                "mod_homepage"   : project.mod_homepage,
+        ]
+        expand valueMap
+    }
+    doLast {
+        var jars = []
+        fabric_subprojects.each({
+            jars.add(["file": "META-INF/jars/${it.archives_base_name}-mc${it.minecraft_version}-${it.version}.jar"])
+        })
+        File file = file("build/resources/main/fabric.mod.json") as File
+        JsonBuilder builder = new JsonBuilder(new JsonSlurper().parse(file))
+        builder.content.jars = jars
+        BufferedWriter writer = file.newWriter()
+        writer.append(builder.toPrettyString())
+        writer.flush()
+        writer.close()
+    }
+}
+
+java {
+    sourceCompatibility(JavaVersion.VERSION_1_8)
+    targetCompatibility(JavaVersion.VERSION_1_8)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.mod_id
+            version = project.version
+            from(components.java)
+        }
+    }
+    repositories {
+        mavenLocal()
+        maven {
+            url("$rootDir/publish")
+        }
+    }
+}

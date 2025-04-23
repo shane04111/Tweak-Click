@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "name": "${mod_name}",
+
+  "version": "${mod_version}",
+  "description": "${mod_description}",
+  "authors": [
+    {
+      "name": "Shane0411",
+      "contact": {
+        "homepage": "https://github.com/Shane0411"
+      }
+    }
+  ],
+  "contact": {
+    "homepage": "${mod_homepage}",
+    "issues": "${mod_sources}/issues",
+    "sources": "${mod_sources}"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {},
+  "depends": {
+    "malilib": "*",
+    "tweakeroo": "*"
+  }
+}
