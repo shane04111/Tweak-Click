@@ -26,17 +26,12 @@ package com.shane.TweakClick.config;
 
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.config.IHotkeyTogglable;
-import fi.dy.masa.malilib.config.options.ConfigBoolean;
-import fi.dy.masa.malilib.config.options.ConfigBooleanHotkeyed;
-import fi.dy.masa.malilib.config.options.ConfigInteger;
 import fi.dy.masa.malilib.config.options.ConfigStringList;
 
 public class ListExtend {
     public static final ConfigStringList PERIMETER_OUTLINE_BLOCKS_LIST = StringList("perimeterOutlineBlocks");
-    public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-            PERIMETER_OUTLINE_BLOCKS_LIST
-    );
+    public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(PERIMETER_OUTLINE_BLOCKS_LIST);
+
     private static ConfigStringList StringList(String name) {
         return new ConfigStringList(name, ImmutableList.of(), name + ".comment");
     }

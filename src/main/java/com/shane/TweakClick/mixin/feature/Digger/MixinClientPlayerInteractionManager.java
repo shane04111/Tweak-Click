@@ -26,7 +26,6 @@ package com.shane.TweakClick.mixin.feature.Digger;
 
 
 import com.shane.TweakClick.config.FeatureToggleExtended;
-import com.shane.TweakClick.config.ListExtend;
 import com.shane.TweakClick.tweak.PlacementTweaks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;

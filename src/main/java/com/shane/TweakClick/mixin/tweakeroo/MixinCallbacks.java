@@ -23,6 +23,7 @@
  */
 
 package com.shane.TweakClick.mixin.tweakeroo;
+
 import com.shane.TweakClick.config.ListExtend;
 import com.shane.TweakClick.tweak.PlacementTweaks;
 import net.minecraft.client.MinecraftClient;
@@ -37,8 +38,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinCallbacks {
     @Inject(method = "init", at = @At("RETURN"))
     private static void init(MinecraftClient mc, CallbackInfo ci) {
-        ListExtend.PERIMETER_OUTLINE_BLOCKS_LIST.setValueChangeCallback(
-                (cfg) -> PlacementTweaks.setPerimeterOutlineBlocks(cfg.getStrings())
-        );
+        ListExtend.PERIMETER_OUTLINE_BLOCKS_LIST.setValueChangeCallback((cfg) -> PlacementTweaks.setPerimeterOutlineBlocks(cfg.getStrings()));
     }
 }

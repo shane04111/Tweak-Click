@@ -26,7 +26,6 @@ package com.shane.TweakClick.mixin.feature.onlyMoveHoldAttack;
 
 import com.shane.TweakClick.config.ConfigExtend;
 import com.shane.TweakClick.config.FeatureToggleExtended;
-import com.shane.TweakClick.config.ListExtend;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;

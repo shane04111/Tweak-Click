@@ -3,19 +3,17 @@
   "package": "com.shane.TweakClick.mixin",
   "compatibilityLevel": "{{COMPATIBILITY_LEVEL}}",
   "client": [
+    "feature.Digger.MixinClientPlayerInteractionManager",
     "feature.onlyMoveHoldAttack.MixinMinecraftClient",
     "feature.removeBreakCooldown.MixinClientPlayerInteractionManager",
-    "tweakeroo.MixinGuiConfigs"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "mixins": [
-    "feature.Digger.MixinClientPlayerInteractionManager",
     "tweakeroo.MixinCallbacks",
     "tweakeroo.MixinConfigGeneric",
     "tweakeroo.MixinConfigList",
     "tweakeroo.MixinConfigs",
+    "tweakeroo.MixinGuiConfigs",
     "tweakeroo.MixinInputHandler"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

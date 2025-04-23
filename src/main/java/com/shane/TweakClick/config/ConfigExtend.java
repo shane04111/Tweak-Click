@@ -30,9 +30,7 @@ import fi.dy.masa.malilib.config.options.ConfigBoolean;
 
 public class ConfigExtend {
     public static final ConfigBoolean MOVEMENT_WILL_HOLD = Boolean("movementWillHold");
-    public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-            MOVEMENT_WILL_HOLD
-    );
+    public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(MOVEMENT_WILL_HOLD);
 
     private static ConfigBoolean Boolean(String name) {
         return new ConfigBoolean(name, false, name + ".comment");

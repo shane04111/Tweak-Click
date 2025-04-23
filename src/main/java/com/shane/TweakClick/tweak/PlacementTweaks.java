@@ -24,21 +24,20 @@
 
 package com.shane.TweakClick.tweak;
 
-import com.shane.TweakClick.config.ConfigExtend;
 import com.shane.TweakClick.config.FeatureToggleExtended;
-import com.shane.TweakClick.config.ListExtend;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
+import org.jetbrains.annotations.Nullable;
+
 //#if MC <= 11802
 import net.minecraft.util.registry.Registry;
 //#else
 //$$ import net.minecraft.registry.Registries;
 //#endif
-import net.minecraft.world.Heightmap;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
