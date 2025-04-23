@@ -24,6 +24,8 @@
 
 package com.shane.TweakClick.tweak;
 
+import com.shane.TweakClick.config.ConfigExtend;
+import com.shane.TweakClick.config.FeatureToggleExtended;
 import com.shane.TweakClick.config.ListExtend;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
@@ -45,7 +47,7 @@ public class PlacementTweaks {
     public static final ArrayList<Block> PERIMETER_OUTLINE_BLOCKS = new ArrayList<>();
 
     public static boolean isPositionDisallowedByPerimeterOutlineList(BlockPos pos) {
-        boolean restrictionEnabled = ListExtend.PERIMETER_WALL_DIGGER.getBooleanValue();
+        boolean restrictionEnabled = FeatureToggleExtended.PERIMETER_WALL_DIGGER.getBooleanValue();
 
         if (!restrictionEnabled) return false;
 

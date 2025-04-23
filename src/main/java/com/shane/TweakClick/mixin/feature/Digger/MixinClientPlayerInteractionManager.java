@@ -25,6 +25,7 @@
 package com.shane.TweakClick.mixin.feature.Digger;
 
 
+import com.shane.TweakClick.config.FeatureToggleExtended;
 import com.shane.TweakClick.config.ListExtend;
 import com.shane.TweakClick.tweak.PlacementTweaks;
 import net.minecraft.client.MinecraftClient;
@@ -43,9 +44,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinClientPlayerInteractionManager {
     @Inject(method = "updateBlockBreakingProgress", at = @At(value = "HEAD"), cancellable = true)
     private void flatDigger1(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
-        if (shouldCancelBreaking(pos)) {
-            cir.setReturnValue(false);
-        } else if (PlacementTweaks.isPositionDisallowedByPerimeterOutlineList(pos)) {
+        if (shouldCancelBreaking(pos) || PlacementTweaks.isPositionDisallowedByPerimeterOutlineList(pos)) {
             cir.setReturnValue(true);
         }
     }
@@ -77,10 +76,10 @@ public class MixinClientPlayerInteractionManager {
         //$$ int playerZ = player.getBlockPos().getZ();
         //#endif
 
-        boolean diggerX = ListExtend.DIGGER_X.getBooleanValue() && !isSneaking && pos.getX() != playerX;
-        boolean diggerZ = ListExtend.DIGGER_Z.getBooleanValue() && !isSneaking && pos.getZ() != playerZ;
-        boolean flatDigger = ListExtend.FLAT_DIGGER.getBooleanValue() && !isSneaking && pos.getY() < playerY;
-        boolean verticalDigger = ListExtend.VERTICAL_DIGGER.getBooleanValue() && isSneaking && (pos.getX() != playerX || pos.getZ() != playerZ);
+        boolean diggerX = FeatureToggleExtended.DIGGER_X.getBooleanValue() && !isSneaking && pos.getX() != playerX;
+        boolean diggerZ = FeatureToggleExtended.DIGGER_Z.getBooleanValue() && !isSneaking && pos.getZ() != playerZ;
+        boolean flatDigger = FeatureToggleExtended.FLAT_DIGGER.getBooleanValue() && !isSneaking && pos.getY() < playerY;
+        boolean verticalDigger = FeatureToggleExtended.VERTICAL_DIGGER.getBooleanValue() && isSneaking && (pos.getX() != playerX || pos.getZ() != playerZ);
 
         return diggerX || diggerZ || flatDigger || verticalDigger;
     }

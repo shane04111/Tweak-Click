@@ -24,6 +24,8 @@
 
 package com.shane.TweakClick.mixin.feature.onlyMoveHoldAttack;
 
+import com.shane.TweakClick.config.ConfigExtend;
+import com.shane.TweakClick.config.FeatureToggleExtended;
 import com.shane.TweakClick.config.ListExtend;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import net.minecraft.client.MinecraftClient;
@@ -53,12 +55,12 @@ public class MixinMinecraftClient {
     @Inject(method = "handleInputEvents", at = @At("HEAD"))
     private void onHoldEasyPlace(CallbackInfo ci) {
         MinecraftClient mc = (MinecraftClient) (Object) this;
-        if (this.currentScreen == null && mc.player != null && ListExtend.ONLY_SPRINT_HOLD_ATTACK.getBooleanValue() && FeatureToggle.TWEAK_TOOL_SWITCH.getBooleanValue()) {
+        if (this.currentScreen == null && mc.player != null && FeatureToggleExtended.ONLY_SPRINT_HOLD_ATTACK.getBooleanValue() && FeatureToggle.TWEAK_TOOL_SWITCH.getBooleanValue()) {
             ClientPlayerEntity player = mc.player;
             if (this.attackCooldown >= 10000) {
                 this.attackCooldown = 0;
             }
-            boolean pressed = (ListExtend.MOVEMENT_WILL_HOLD.getBooleanValue()) ? !player.input.getMovementInput().equals(Vec2f.ZERO) : player.isSprinting();
+            boolean pressed = (ConfigExtend.MOVEMENT_WILL_HOLD.getBooleanValue()) ? !player.input.getMovementInput().equals(Vec2f.ZERO) : player.isSprinting();
             KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.options.attackKey.getBoundKeyTranslationKey()), pressed);
         }
     }

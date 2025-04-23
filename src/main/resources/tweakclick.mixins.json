@@ -4,7 +4,8 @@
   "compatibilityLevel": "{{COMPATIBILITY_LEVEL}}",
   "client": [
     "feature.onlyMoveHoldAttack.MixinMinecraftClient",
-    "feature.removeBreakCooldown.MixinClientPlayerInteractionManager"
+    "feature.removeBreakCooldown.MixinClientPlayerInteractionManager",
+    "tweakeroo.MixinGuiConfigs"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -12,6 +13,7 @@
   "mixins": [
     "feature.Digger.MixinClientPlayerInteractionManager",
     "tweakeroo.MixinCallbacks",
+    "tweakeroo.MixinConfigGeneric",
     "tweakeroo.MixinConfigList",
     "tweakeroo.MixinConfigs",
     "tweakeroo.MixinInputHandler"

@@ -22,24 +22,20 @@
  * SOFTWARE.
  */
 
-package com.shane.TweakClick.mixin.tweakeroo;
+package com.shane.TweakClick.config;
 
 import com.google.common.collect.ImmutableList;
-import com.shane.TweakClick.config.ListExtend;
 import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.tweakeroo.config.Configs;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.Shadow;
+import fi.dy.masa.malilib.config.options.ConfigBoolean;
 
-@Pseudo
-@Mixin(value = Configs.Lists.class, remap = false)
-public class MixinConfigList {
-    @Final
-    @Shadow
-    public static ImmutableList<IConfigBase> OPTIONS = new ImmutableList.Builder<IConfigBase>()
-            .addAll(ListExtend.OPTIONS)
-            .addAll(Configs.Lists.OPTIONS)
-            .build();
+public class ConfigExtend {
+    public static final ConfigBoolean MOVEMENT_WILL_HOLD = Boolean("movementWillHold");
+    public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
+            MOVEMENT_WILL_HOLD
+    );
+
+    private static ConfigBoolean Boolean(String name) {
+        return new ConfigBoolean(name, false, name + ".comment");
+    }
 }
+

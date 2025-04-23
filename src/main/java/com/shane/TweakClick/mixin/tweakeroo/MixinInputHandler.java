@@ -24,6 +24,7 @@
 
 package com.shane.TweakClick.mixin.tweakeroo;
 
+import com.shane.TweakClick.config.FeatureToggleExtended;
 import com.shane.TweakClick.config.ListExtend;
 import fi.dy.masa.malilib.config.IHotkeyTogglable;
 import fi.dy.masa.malilib.hotkeys.IKeybindManager;
@@ -39,7 +40,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinInputHandler {
     @Inject(method = "addKeysToMap", at = @At("RETURN"))
     private void addKeysToMap(IKeybindManager manager, CallbackInfo ci) {
-        for (IHotkeyTogglable toggle : ListExtend.FEATURE_OPTIONS) {
+        for (IHotkeyTogglable toggle : FeatureToggleExtended.values()) {
             manager.addKeybindToMap(toggle.getKeybind());
         }
     }

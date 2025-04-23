@@ -25,6 +25,7 @@
 package com.shane.TweakClick.mixin.tweakeroo;
 
 import com.google.common.collect.ImmutableList;
+import com.shane.TweakClick.config.FeatureToggleExtended;
 import com.shane.TweakClick.config.ListExtend;
 import com.shane.TweakClick.tweak.PlacementTweaks;
 import fi.dy.masa.malilib.config.IHotkeyTogglable;
@@ -46,7 +47,11 @@ import java.util.List;
 @Mixin(value = Configs.class, remap = false)
 public class MixinConfigs {
     @Unique
-    private static final ImmutableList<IHotkeyTogglable> FEATURE_OPTIONS = new ImmutableList.Builder<IHotkeyTogglable>().addAll(Arrays.asList(FeatureToggle.values())).addAll(ListExtend.FEATURE_OPTIONS).build();
+    private static final ImmutableList<IHotkeyTogglable> FEATURE_OPTIONS = new ImmutableList
+            .Builder<IHotkeyTogglable>()
+            .addAll(Arrays.asList(FeatureToggleExtended.values()))
+            .addAll(Arrays.asList(FeatureToggle.values()))
+            .build();
 
     @ModifyArg(method = "loadFromFile", at = @At(value = "INVOKE", target = "Lfi/dy/masa/malilib/config/ConfigUtils;readHotkeyToggleOptions(Lcom/google/gson/JsonObject;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V", ordinal = 1), index = 3)
     private static List<? extends IHotkeyTogglable> readFeatureOptions(List<? extends IHotkeyTogglable> options) {

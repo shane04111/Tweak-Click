@@ -25,7 +25,7 @@
 package com.shane.TweakClick.mixin.tweakeroo;
 
 import com.google.common.collect.ImmutableList;
-import com.shane.TweakClick.config.ListExtend;
+import com.shane.TweakClick.config.ConfigExtend;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.tweakeroo.config.Configs;
 import org.spongepowered.asm.mixin.Final;
@@ -34,12 +34,13 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Pseudo
-@Mixin(value = Configs.Lists.class, remap = false)
-public class MixinConfigList {
+@Mixin(value = Configs.Generic.class, remap = false)
+public class MixinConfigGeneric {
     @Final
     @Shadow
-    public static ImmutableList<IConfigBase> OPTIONS = new ImmutableList.Builder<IConfigBase>()
-            .addAll(ListExtend.OPTIONS)
-            .addAll(Configs.Lists.OPTIONS)
+    public static ImmutableList<IConfigBase> OPTIONS = new ImmutableList
+            .Builder<IConfigBase>()
+            .addAll(ConfigExtend.OPTIONS)
+            .addAll(Configs.Generic.OPTIONS)
             .build();
 }

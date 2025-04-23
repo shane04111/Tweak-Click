@@ -24,8 +24,7 @@
 
 package com.shane.TweakClick.mixin.feature.removeBreakCooldown;
 
-
-import com.shane.TweakClick.config.ListExtend;
+import com.shane.TweakClick.config.FeatureToggleExtended;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -41,13 +40,9 @@ public class MixinClientPlayerInteractionManager {
     @Shadow
     private int blockBreakingCooldown;
 
-    @Inject(method = "updateBlockBreakingProgress",
-            at = @At(value = "FIELD",
-                    target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I",
-                    opcode = Opcodes.PUTFIELD,
-                    ordinal = 2, shift = At.Shift.AFTER))
+    @Inject(method = "updateBlockBreakingProgress", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", opcode = Opcodes.PUTFIELD, ordinal = 2, shift = At.Shift.AFTER))
     private void removeBreakingCooldown(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
-        if (ListExtend.REMOVE_BREAKING_COOLDOWN.getBooleanValue()) {
+        if (FeatureToggleExtended.REMOVE_BREAKING_COOLDOWN.getBooleanValue()) {
             blockBreakingCooldown = 0;
         }
     }
