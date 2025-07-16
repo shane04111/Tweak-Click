@@ -11,35 +11,41 @@ preprocess {
 }
 
 repositories {
+    mavenLocal()
     maven {
-        url 'https://masa.dy.fi/maven'
+        url = 'https://masa.dy.fi/maven'
     }
     maven {
-        url 'https://maven.terraformersmc.com/releases'
+        url = 'https://maven.terraformersmc.com/releases'
     }
     maven {
-        url 'https://www.cursemaven.com'
+        url = 'https://www.cursemaven.com'
     }
     maven {
-        url 'https://jitpack.io'
+        url = 'https://maven.fallenbreath.me/jitpack'
     }
+    maven {
+        url = 'https://maven.fallenbreath.me/releases'
+    }
+    mavenCentral()
+}
+
+static String curseForgeOrOther(version, curseForge, other) {
+    return ((version as String) ==~ /\d+/ ? curseForge : other) + ':' + version
 }
 
 // list of (dependencyNotation -> should use modImplementation)
 def mod_dependencies = [
         [(mcVersion >= 12100 ? 'com.github.sakura-ryoko:malilib:' : 'fi.dy.masa.malilib:') + "${project.malilib_version}", true],
-        [(mcVersion >= 12006 ? 'com.github.sakura-ryoko:tweakeroo:' : 'curse.maven:tweakeroo-297344:') + "${project.tweakeroo_file_id}", true],
+        [curseForgeOrOther(project.tweakeroo_file_id, 'curse.maven:tweakeroo-297344', 'com.github.sakura-ryoko:tweakeroo'), true],
 ]
 
 // https://github.com/FabricMC/fabric-loader/issues/783
 configurations {
     modRuntimeOnly.exclude group: 'net.fabricmc', module: 'fabric-loader'
 }
-configurations {
-    modImplementation.exclude group: 'io.github.prospector', module: 'modmenu'
-}
 
-base.archivesName = project.archives_base_name + '-mc' + project.minecraft_version
+base.archivesName = "${project.archives_base_name}-mc${project.minecraft_version}"
 
 dependencies {
     // loom
@@ -79,7 +85,7 @@ JavaVersion MIXIN_COMPATIBILITY_LEVEL = JAVA_COMPATIBILITY
 
 loom {
     runConfigs.configureEach {
-        runDir "../../run"
+        runDir '../../run'
         vmArgs '-Dmixin.debug.export=true'
     }
     runConfigs.client {
@@ -95,7 +101,6 @@ loom {
 }
 
 tasks.register("runProductionClient", JavaExec) {
-    dependsOn(tasks.remapJar)
     classpath.from(configurations.productionRuntimeClient)
     mainClass.set("net.fabricmc.loader.impl.launch.knot.KnotClient")
     workingDir(file("run/client"))
@@ -110,17 +115,11 @@ tasks.register("runProductionClient", JavaExec) {
                 "--height", "1080"
         )
         jvmArgs("-Dmixin.debug.export=true")
-        jvmArgs("-Dfabric.addMods=${configurations.productionRuntimeMods.files.join(File.pathSeparator)}${File.pathSeparator}${tasks.remapJar.archiveFile.get().asFile.absolutePath}")
-
 
         if (Platform.CURRENT.operatingSystem.isMacOS()) {
             jvmArgs("-XstartOnFirstThread")
         }
     }
-}
-
-remapJar {
-    remapperIsolation.set(true)
 }
 
 // See https://youtrack.jetbrains.com/issue/IDEA-296490
@@ -172,7 +171,7 @@ java {
 
 jar {
     from("../../LICENSE") {
-        rename { "${it}_${project.archives_base_name}" }
+        rename { "${it}" }
     }
 }
 
@@ -215,7 +214,7 @@ testClasses.dependsOn licenseFormatTest
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId base.archivesName.get()
+            artifactId = base.archivesName.get()
             from components.java
             version = project.mod_version
         }

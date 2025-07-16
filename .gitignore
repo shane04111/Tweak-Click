@@ -44,3 +44,5 @@ replay_*.log
 lib/
 *.bat
 !gradlew.bat
+
+CLAUDE.md
