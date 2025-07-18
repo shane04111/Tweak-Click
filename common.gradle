@@ -6,9 +6,9 @@ apply plugin: 'com.replaymod.preprocess'
 int mcVersion = project.mcVersion
 version("v${project.mod_version}")
 
-preprocess {
-    tabIndentation = true
-}
+//preprocess {
+//    tabIndentation = true
+//}
 
 repositories {
     mavenLocal()
