@@ -67,7 +67,12 @@ public class PlacementTweaks {
     @Nullable
     private static Block getBlockFromName(String name) {
         try {
+            //#if MC <= 12100
             Identifier identifier = new Identifier(name);
+            //#else
+            //$$ Identifier identifier = Identifier.of(name);
+            //#endif
+
             //#if MC <= 11802
             Block result = Registry.BLOCK.getOrEmpty(identifier).orElse(null);
             //#else

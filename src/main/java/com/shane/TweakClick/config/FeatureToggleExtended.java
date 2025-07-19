@@ -38,6 +38,7 @@ import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.tweakeroo.Tweakeroo;
+import org.apache.logging.log4j.Logger;
 
 public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable<IConfigBoolean> {
     PERIMETER_WALL_DIGGER("perimeterWallDigger"),
@@ -47,10 +48,15 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
     DIGGER_X("diggerX"),
     DIGGER_Z("diggerZ"),
     REMOVE_BREAKING_COOLDOWN("removeCooldown");
-
     private final String name;
+    //#if MC <= 12100
     private final String comment;
     private final String prettyName;
+    //#else
+    //$$ private String comment;
+    //$$ private String prettyName;
+    //$$ private String translatedName;
+    //#endif
     private final IKeybind keybind;
     private final boolean defaultValueBoolean;
     private final boolean singlePlayer;
@@ -68,7 +74,7 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
     FeatureToggleExtended(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment) {
         this(name, defaultValue, singlePlayer, defaultHotkey, settings, comment, StringUtils.splitCamelCase(name.substring(5)));
     }
-
+    //#if MC <= 12100
     FeatureToggleExtended(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment, String prettyName) {
         this.name = name;
         this.valueBoolean = defaultValue;
@@ -79,6 +85,42 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
         this.keybind.setCallback(new KeyCallbackToggleBooleanConfigWithMessage(this));
     }
+    //#else
+    //$$ FeatureToggleExtended(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment, String prettyName){
+    //$$    this(name, defaultValue, singlePlayer, defaultHotkey, settings, prettyName, StringUtils.splitCamelCase(name), name);
+    //$$ }
+    //$$ FeatureToggleExtended(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName) {
+    //$$     this.name = name;
+    //$$     this.valueBoolean = defaultValue;
+    //$$     this.defaultValueBoolean = defaultValue;
+    //$$     this.singlePlayer = singlePlayer;
+    //$$     this.translatedName = translatedName;
+    //$$     this.comment = comment;
+    //$$     this.prettyName = prettyName;
+    //$$     this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
+    //$$     this.keybind.setCallback(new KeyCallbackToggleBooleanConfigWithMessage(this));
+    //$$ }
+    //$$ @Override
+    //$$ public String getTranslatedName() {
+    //$$     String name = StringUtils.getTranslatedOrFallback(this.translatedName, this.name);
+    //$$     if (this.singlePlayer) {
+    //$$         name = GuiBase.TXT_GOLD + name + GuiBase.TXT_RST;
+    //$$     }
+    //$$     return name;
+    //$$ }
+    //$$ @Override
+    //$$ public void setPrettyName(String prettyName) {
+    //$$     this.prettyName = prettyName;
+    //$$ }
+    //$$ @Override
+    //$$ public void setTranslatedName(String translatedName) {
+    //$$     this.translatedName = translatedName;
+    //$$ }
+    //$$ @Override
+    //$$ public void setComment(String comment) {
+    //$$     this.comment = comment;
+    //$$ }
+    //#endif
 
     @Override
     public ConfigType getType() {
@@ -194,10 +236,17 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
             if (element.isJsonPrimitive()) {
                 this.valueBoolean = element.getAsBoolean();
             } else {
-                Tweakeroo.logger.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+                Logger().warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
             }
         } catch (Exception e) {
-            Tweakeroo.logger.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            Logger().warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
         }
+    }
+    private Logger Logger() {
+        //#if MC <= 12104
+        return Tweakeroo.logger;
+        //#else
+        //$$ return Tweakeroo.LOGGER;
+        //#endif
     }
 }

@@ -13,7 +13,6 @@
     "sources": "${mod_sources}"
   },
   "license": "MIT",
-  "icon": "assets/tweakclick/icon.png",
   "environment": "*",
   "entrypoints": {
   },
