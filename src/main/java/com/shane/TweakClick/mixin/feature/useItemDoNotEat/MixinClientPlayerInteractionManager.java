@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.shane.TweakClick.mixin.feature.useItemOnBlockFirst;
+package com.shane.TweakClick.mixin.feature.useItemDoNotEat;
 
 import com.shane.TweakClick.config.FeatureToggleExtended;
 import net.minecraft.client.MinecraftClient;
@@ -60,14 +60,10 @@ public abstract class MixinClientPlayerInteractionManager {
     @Inject(method = "interactBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getMainHandStack()Lnet/minecraft/item/ItemStack;"), cancellable = true)
     private void cancelEat(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
         //#endif
-        BlockPos blockPos = hitResult.getBlockPos();
-        assert this.client.world != null;
-        if (!this.client.world.getWorldBorder().contains(blockPos)) return;
-        if (this.gameMode == GameMode.SPECTATOR) return;
-        ItemStack itemStack = player.getStackInHand(hand);
-        Item hitItem = client.world.getBlockState(blockPos).getBlock().asItem();
+        assert client.world != null;
+        Item hitItem = client.world.getBlockState(hitResult.getBlockPos()).getBlock().asItem();
         boolean isCarrotOrPotato = hitItem.equals(Items.CARROT.asItem()) || hitItem.equals(Items.POTATO.asItem());
-        boolean checkUseItemNotEat = FeatureToggleExtended.USE_ITEM_DO_NOT_EAT.getBooleanValue() && hitItem.equals(itemStack.getItem());
+        boolean checkUseItemNotEat = FeatureToggleExtended.USE_ITEM_DO_NOT_EAT.getBooleanValue() && hitItem.equals(player.getStackInHand(hand).getItem());
         if (checkUseItemNotEat && isCarrotOrPotato) cir.setReturnValue(ActionResult.FAIL);
     }
 }
