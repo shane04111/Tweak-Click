@@ -26,7 +26,8 @@ package com.shane.TweakClick.mixin.tweakeroo;
 
 import com.google.common.collect.ImmutableList;
 import com.shane.TweakClick.config.FeatureToggleExtended;
-import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.config.IConfigBase;
+import fi.dy.masa.malilib.config.IHotkeyTogglable;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
 import fi.dy.masa.tweakeroo.gui.GuiConfigs;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,22 +35,24 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import java.util.Arrays;
+import java.util.Collection;
 
 //#if MC >=11800
 import fi.dy.masa.malilib.config.options.BooleanHotkeyGuiWrapper;
-//#else
+//#elseif MC >= 11700 && MC < 11800
 //$$ import java.util.ArrayList;
 //$$ import java.util.List;
+//$$ import fi.dy.masa.malilib.config.ConfigType;
+//$$ import fi.dy.masa.malilib.config.ConfigUtils;
+//#else
+//$$ import fi.dy.masa.malilib.config.IConfigValue;
+//$$ import java.util.List;
 //#endif
-
-
-import java.util.Arrays;
-import java.util.Collection;
 
 @Pseudo
 @Mixin(value = GuiConfigs.class, remap = false)
 public class MixinGuiConfigs {
-    //#if MC >= 11800
     @Unique
     private static final ImmutableList<IHotkeyTogglable> FEATURE_TOGGLES = new ImmutableList
             .Builder<IHotkeyTogglable>()
@@ -57,6 +60,7 @@ public class MixinGuiConfigs {
             .addAll(Arrays.asList(FeatureToggle.values()))
             .build();
 
+    //#if MC >= 11800
     @Unique
     protected BooleanHotkeyGuiWrapper wrapConfig(IHotkeyTogglable config) {
         return new BooleanHotkeyGuiWrapper(config.getName(), config, config.getKeybind());
@@ -66,8 +70,8 @@ public class MixinGuiConfigs {
     private Collection<? extends IConfigBase> ExtendTweaks(Collection<? extends IConfigBase> configs) {
         return FEATURE_TOGGLES.stream().map(this::wrapConfig).toList();
     }
-    //#else
-    //$$ private static final ImmutableList<IConfigValue> FEATURE_TOGGLES = new ImmutableList.Builder<IConfigValue>().addAll(Arrays.asList(FeatureToggle.values())).addAll(Arrays.asList(FeatureToggleExtended.values())).build();
+
+    //#elseif MC >= 11700 && MC < 11800
     //$$ @ModifyArg(method = "getConfigs", at = @At(value = "INVOKE", target = "Lfi/dy/masa/malilib/gui/GuiConfigsBase$ConfigOptionWrapper;createFor(Ljava/util/Collection;)Ljava/util/List;", ordinal = 1), index = 0)
     //$$ private Collection<? extends IConfigBase> ExtendTweaks(Collection<? extends IConfigBase> configs) {
     //$$     List<IConfigBase> list = new ArrayList<>();
@@ -75,6 +79,15 @@ public class MixinGuiConfigs {
     //$$     list.addAll(ConfigUtils.createConfigWrapperForType(ConfigType.HOTKEY, FEATURE_TOGGLES));
     //$$     return list;
     //$$ }
-    //#endif
 
+    //#else
+    //$$ @ModifyArg(method = "getConfigs", at = @At(value = "INVOKE", target = "Lfi/dy/masa/malilib/config/ConfigUtils;createConfigWrapperForType(Lfi/dy/masa/malilib/config/ConfigType;Ljava/util/List;)Ljava/util/List;", ordinal = 2), index = 1)
+    //$$ private List<? extends IConfigValue> extendTweaksBoolean(List<? extends IConfigValue> toWrap) {
+    //$$     return FEATURE_TOGGLES.asList();
+    //$$ }
+    //$$ @ModifyArg(method = "getConfigs", at = @At(value = "INVOKE", target = "Lfi/dy/masa/malilib/config/ConfigUtils;createConfigWrapperForType(Lfi/dy/masa/malilib/config/ConfigType;Ljava/util/List;)Ljava/util/List;", ordinal = 3), index = 1)
+    //$$ private List<? extends IConfigValue> extendTweaksHotkey(List<? extends IConfigValue> toWrap) {
+    //$$     return FEATURE_TOGGLES.asList();
+    //$$ }
+    //#endif
 }
