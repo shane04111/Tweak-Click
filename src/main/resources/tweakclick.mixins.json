@@ -3,7 +3,7 @@
   "package": "com.shane.TweakClick.mixin",
   "compatibilityLevel": "{{COMPATIBILITY_LEVEL}}",
   "client": [
-    "feature.Digger.MixinClientPlayerInteractionManager",
+    "feature.diggerFeature.MixinClientPlayerInteractionManager",
     "feature.onlyMoveHoldAttack.MixinMinecraftClient",
     "feature.removeBreakCooldown.MixinClientPlayerInteractionManager",
     "tweakeroo.MixinCallbacks",

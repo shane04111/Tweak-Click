@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.shane.TweakClick.mixin.feature.Digger;
+package com.shane.TweakClick.mixin.feature.diggerFeature;
 
 
 import com.shane.TweakClick.config.FeatureToggleExtended;
