@@ -6,6 +6,7 @@
     "feature.diggerFeature.MixinClientPlayerInteractionManager",
     "feature.onlyMoveHoldAttack.MixinMinecraftClient",
     "feature.removeBreakCooldown.MixinClientPlayerInteractionManager",
+    "feature.useItemOnBlockFirst.MixinClientPlayerInteractionManager",
     "tweakeroo.MixinCallbacks",
     "tweakeroo.MixinConfigGeneric",
     "tweakeroo.MixinConfigList",

@@ -17,4 +17,6 @@
   "perimeterWallDigger.comment": "Prevents player from mining underneath the block types\nspecified in the Perimeter Outline Blocks list",
   "perimeterOutlineBlocks": "perimeterOutlineBlocks",
   "perimeterOutlineBlock.comment": "The block types checked by the Perimeter Wall Digger tweak.",
+  "useItemDoNotEat": "useItemDoNotEat",
+  "useItemDoNotEat.comment": "Placing carrots and potatoes will not consume the items themselves."
 }

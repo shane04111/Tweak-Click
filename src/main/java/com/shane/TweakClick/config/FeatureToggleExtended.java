@@ -47,7 +47,9 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
     VERTICAL_DIGGER("verticalDigger"),
     DIGGER_X("diggerX"),
     DIGGER_Z("diggerZ"),
-    REMOVE_BREAKING_COOLDOWN("removeCooldown");
+    REMOVE_BREAKING_COOLDOWN("removeCooldown"),
+    USE_ITEM_DO_NOT_EAT("useItemDoNotEat"),
+    ;
     private final String name;
     //#if MC <= 12100
     private final String comment;

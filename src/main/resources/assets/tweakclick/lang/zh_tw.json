@@ -17,4 +17,6 @@
   "perimeterWallDigger.comment": "防止玩家在「圍牆輪廓方塊」清單中指定的方塊類型下方挖掘。",
   "perimeterOutlineBlocks": "perimeterOutlineBlocks | 圍牆輪廓方塊",
   "perimeterOutlineBlock.comment": "「圍牆挖掘器」功能所檢查的方塊類型。",
+  "useItemDoNotEat": "useItemDoNotEat | 放置物品不吃東西",
+  "useItemDoNotEat.comment": "放置胡蘿蔔與馬鈴薯時不會吃掉物品本身。"
 }
