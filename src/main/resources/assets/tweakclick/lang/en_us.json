@@ -16,5 +16,5 @@
   "perimeterWallDigger": "perimeterWallDigger",
   "perimeterWallDigger.comment": "Prevents player from mining underneath the block types\nspecified in the Perimeter Outline Blocks list",
   "perimeterOutlineBlocks": "perimeterOutlineBlocks",
-  "perimeterOutlineBlock.comments": "The block types checked by the Perimeter Wall Digger tweak."
+  "perimeterOutlineBlock.comment": "The block types checked by the Perimeter Wall Digger tweak.",
 }

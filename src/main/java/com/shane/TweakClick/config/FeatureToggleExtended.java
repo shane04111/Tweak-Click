@@ -87,7 +87,7 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
     }
     //#else
     //$$ FeatureToggleExtended(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment, String prettyName){
-    //$$    this(name, defaultValue, singlePlayer, defaultHotkey, settings, prettyName, StringUtils.splitCamelCase(name), name);
+    //$$    this(name, defaultValue, singlePlayer, defaultHotkey, settings, comment, prettyName, name);
     //$$ }
     //$$ FeatureToggleExtended(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName) {
     //$$     this.name = name;
