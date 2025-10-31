@@ -56,6 +56,9 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
     //$$ private String comment;
     //$$ private String prettyName;
     //$$ private String translatedName;
+    //$$ //#if MC > 12108
+    //$$ //$$ private boolean dirty;
+    //$$ //#endif
     //#endif
     private final IKeybind keybind;
     private final boolean defaultValueBoolean;
@@ -90,6 +93,9 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
     //$$    this(name, defaultValue, singlePlayer, defaultHotkey, settings, comment, prettyName, name);
     //$$ }
     //$$ FeatureToggleExtended(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName) {
+    //$$     //#if MC > 12108
+    //$$     //$$ this.dirty = false;
+    //$$     //#endif
     //$$     this.name = name;
     //$$     this.valueBoolean = defaultValue;
     //$$     this.defaultValueBoolean = defaultValue;
@@ -119,6 +125,27 @@ public enum FeatureToggleExtended implements IHotkeyTogglable, IConfigNotifiable
     //$$ @Override
     //$$ public void setComment(String comment) {
     //$$     this.comment = comment;
+    //$$ }
+    //#endif
+    //#if MC > 12108
+    //$$ @Override
+    //$$ public boolean isDirty() {
+    //$$      return this.dirty;
+    //$$ }
+    //$$ @Override
+    //$$ public void markDirty() {
+    //$$      this.dirty = true;
+    //$$  }
+    //$$ @Override
+    //$$ public void markClean() {
+    //$$      this.dirty = false;
+    //$$ }
+    //$$ @Override
+    //$$ public void checkIfClean() {
+    //$$     if (this.isDirty()) {
+    //$$         this.markClean();
+    //$$         this.onValueChanged();
+    //$$     }
     //$$ }
     //#endif
 
