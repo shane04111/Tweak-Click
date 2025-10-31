@@ -1,8 +1,8 @@
 plugins {
     id 'maven-publish'
     id 'com.github.hierynomus.license' version '0.16.1' apply false
-    id 'fabric-loom' version '1.10-SNAPSHOT' apply false
-    id 'com.replaymod.preprocess' version '9d21b33'
+    id 'fabric-loom' version '1.11-SNAPSHOT' apply false
+    id 'com.replaymod.preprocess' version 'd452ef7612'
 }
 
 preprocess {
@@ -17,7 +17,8 @@ preprocess {
     def mc1213 = createNode('1.21.3', 1_21_03, '')
     def mc1214 = createNode('1.21.4', 1_21_04, '')
     def mc1215 = createNode('1.21.5', 1_21_05, '')
-    def mc1217 = createNode('1.21.7', 1_21_07, '')
+    def mc1218 = createNode('1.21.8', 1_21_08, '')
+    def mc12110 = createNode('1.21.10', 1_21_10, '')
     mc115.link(mc116, null)
     mc116.link(mc117, null)
     mc117.link(mc118, null)
@@ -28,7 +29,8 @@ preprocess {
     mc1211.link(mc1213, null)
     mc1213.link(mc1214, null)
     mc1214.link(mc1215, null)
-    mc1215.link(mc1217, null)
+    mc1215.link(mc1218, null)
+    mc1218.link(mc12110, null)
 }
 
 tasks.register('buildAndGather') {
@@ -63,8 +65,11 @@ tasks.register('buildAndGather') {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
         }
-        doLast {
-            println 'clear builds'
+    }
+    doLast {
+        println 'clear builds'
+        def buildLibs = { p -> p.buildDir.toPath().resolve('libs') }
+        subprojects {
             delete fileTree(buildLibs(project)) {
                 include '*'
             }
