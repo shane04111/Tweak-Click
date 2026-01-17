@@ -24,16 +24,16 @@
 
 package com.shane.TweakClick.mixin.feature.onlyMoveHoldAttack;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.shane.TweakClick.config.ConfigExtend;
 import com.shane.TweakClick.config.FeatureToggleExtended;
 import fi.dy.masa.tweakeroo.config.FeatureToggle;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.phys.Vec2;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,26 +41,26 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public class MixinMinecraftClient {
     @Shadow
-    protected int attackCooldown;
+    protected int missTime;
     @Shadow
-    public Screen currentScreen;
+    public Screen screen;
     @Final
     @Shadow
-    public GameOptions options;
+    public Options options;
 
-    @Inject(method = "handleInputEvents", at = @At("HEAD"))
+    @Inject(method = "handleKeybinds", at = @At("HEAD"))
     private void onHoldEasyPlace(CallbackInfo ci) {
-        MinecraftClient mc = (MinecraftClient) (Object) this;
-        if (this.currentScreen == null && mc.player != null && FeatureToggleExtended.ONLY_SPRINT_HOLD_ATTACK.getBooleanValue() && FeatureToggle.TWEAK_TOOL_SWITCH.getBooleanValue()) {
-            ClientPlayerEntity player = mc.player;
-            if (this.attackCooldown >= 10000) {
-                this.attackCooldown = 0;
+        Minecraft mc = (Minecraft) (Object) this;
+        if (this.screen == null && mc.player != null && FeatureToggleExtended.ONLY_SPRINT_HOLD_ATTACK.getBooleanValue() && FeatureToggle.TWEAK_TOOL_SWITCH.getBooleanValue()) {
+            LocalPlayer player = mc.player;
+            if (this.missTime >= 10000) {
+                this.missTime = 0;
             }
-            boolean pressed = (ConfigExtend.MOVEMENT_WILL_HOLD.getBooleanValue()) ? !player.input.getMovementInput().equals(Vec2f.ZERO) : player.isSprinting();
-            KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.options.attackKey.getBoundKeyTranslationKey()), pressed);
+            boolean pressed = (ConfigExtend.MOVEMENT_WILL_HOLD.getBooleanValue()) ? !player.input.getMoveVector().equals(Vec2.ZERO) : player.isSprinting();
+            KeyMapping.set(InputConstants.getKey(this.options.keyAttack.saveString()), pressed);
         }
     }
 }

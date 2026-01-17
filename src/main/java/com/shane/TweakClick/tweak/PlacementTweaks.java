@@ -25,18 +25,18 @@
 package com.shane.TweakClick.tweak;
 
 import com.shane.TweakClick.config.FeatureToggleExtended;
-import net.minecraft.block.Block;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Heightmap;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.levelgen.Heightmap;
 
 //#if MC <= 11802
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 //#else
-//$$ import net.minecraft.registry.Registries;
+//$$ import net.minecraft.core.registries.BuiltInRegistries;
 //#endif
 
 import java.util.ArrayList;
@@ -50,8 +50,8 @@ public class PlacementTweaks {
 
         if (!restrictionEnabled) return false;
 
-        ClientWorld world = MinecraftClient.getInstance().world;
-        return world != null && PERIMETER_OUTLINE_BLOCKS.contains(world.getBlockState(world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).down()).getBlock());
+        ClientLevel world = Minecraft.getInstance().level;
+        return world != null && PERIMETER_OUTLINE_BLOCKS.contains(world.getBlockState(world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, pos).below()).getBlock());
     }
 
     public static void setPerimeterOutlineBlocks(List<String> blocks) {
@@ -68,17 +68,16 @@ public class PlacementTweaks {
     private static Block getBlockFromName(String name) {
         try {
             //#if MC <= 12100
-            Identifier identifier = new Identifier(name);
+            ResourceLocation identifier = new ResourceLocation(name);
             //#else
-            //$$ Identifier identifier = Identifier.of(name);
+            //$$ ResourceLocation identifier = ResourceLocation.parse(name);
             //#endif
 
             //#if MC <= 11802
-            Block result = Registry.BLOCK.getOrEmpty(identifier).orElse(null);
+            return Registry.BLOCK.getOptional(identifier).orElse(null);
             //#else
-            //$$ Block result = Registries.BLOCK.getOrEmpty(identifier).orElse(null);
+            //$$ return BuiltInRegistries.BLOCK.getOptional(identifier).orElse(null);
             //#endif
-            return result;
         } catch (Exception e) {
             return null;
         }

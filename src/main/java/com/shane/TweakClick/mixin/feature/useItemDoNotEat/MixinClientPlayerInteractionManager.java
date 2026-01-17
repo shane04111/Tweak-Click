@@ -25,18 +25,16 @@
 package com.shane.TweakClick.mixin.feature.useItemDoNotEat;
 
 import com.shane.TweakClick.config.FeatureToggleExtended;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameMode;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,27 +42,26 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-
-@Mixin(ClientPlayerInteractionManager.class)
+@Mixin(MultiPlayerGameMode.class)
 public abstract class MixinClientPlayerInteractionManager {
     @Shadow
     @Final
-    private MinecraftClient client;
+    private Minecraft minecraft;
     @Shadow
-    private GameMode gameMode;
+    private GameType localPlayerMode;
 
     //#if MC >= 11900
-    //$$@Inject(method="interactBlock", at= @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;<init>()V"), cancellable = true)
-    //$$private void cancelEat(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
+    //$$@Inject(method="useItemOn", at= @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;<init>()V"), cancellable = true)
+    //$$private void cancelEat(LocalPlayer player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
     //#else
-    @Inject(method = "interactBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getMainHandStack()Lnet/minecraft/item/ItemStack;"), cancellable = true)
-    private void cancelEat(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
-        //#endif
-        assert client.world != null;
-        Item hitItem = client.world.getBlockState(hitResult.getBlockPos()).getBlock().asItem();
+    @Inject(method = "useItemOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getMainHandItem()Lnet/minecraft/world/item/ItemStack;"), cancellable = true)
+    private void cancelEat(LocalPlayer player, ClientLevel world, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
+    //#endif
+        assert minecraft.level != null;
+        Item hitItem = minecraft.level.getBlockState(hitResult.getBlockPos()).getBlock().asItem();
         boolean isCarrotOrPotato = hitItem.equals(Items.CARROT.asItem()) || hitItem.equals(Items.POTATO.asItem());
-        boolean checkUseItemNotEat = FeatureToggleExtended.USE_ITEM_DO_NOT_EAT.getBooleanValue() && hitItem.equals(player.getStackInHand(hand).getItem());
-        if (checkUseItemNotEat && isCarrotOrPotato) cir.setReturnValue(ActionResult.FAIL);
+        boolean checkUseItemNotEat = FeatureToggleExtended.USE_ITEM_DO_NOT_EAT.getBooleanValue() && hitItem.equals(player.getItemInHand(hand).getItem());
+        if (checkUseItemNotEat && isCarrotOrPotato) cir.setReturnValue(InteractionResult.FAIL);
     }
 }
 

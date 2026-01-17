@@ -27,28 +27,28 @@ package com.shane.TweakClick.mixin.feature.diggerFeature;
 
 import com.shane.TweakClick.config.FeatureToggleExtended;
 import com.shane.TweakClick.tweak.PlacementTweaks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ClientPlayerInteractionManager.class)
+@Mixin(MultiPlayerGameMode.class)
 public class MixinClientPlayerInteractionManager {
-    @Inject(method = "updateBlockBreakingProgress", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "continueDestroyBlock", at = @At(value = "HEAD"), cancellable = true)
     private void flatDigger1(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
         if (shouldCancelBreaking(pos) || PlacementTweaks.isPositionDisallowedByPerimeterOutlineList(pos)) {
             cir.setReturnValue(true);
         }
     }
 
-    @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "startDestroyBlock", at = @At("HEAD"), cancellable = true)
     private void handleBreakingRestriction1(BlockPos pos, Direction side, CallbackInfoReturnable<Boolean> cir) {
         if (shouldCancelBreaking(pos) || PlacementTweaks.isPositionDisallowedByPerimeterOutlineList(pos)) {
             cir.setReturnValue(false);
@@ -57,22 +57,26 @@ public class MixinClientPlayerInteractionManager {
 
     @Unique
     private boolean shouldCancelBreaking(BlockPos pos) {
-        ClientWorld world = MinecraftClient.getInstance().world;
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        ClientLevel world = Minecraft.getInstance().level;
+        LocalPlayer player = Minecraft.getInstance().player;
         if (world == null && player == null) {
             return false;
         }
         assert player != null;
-        boolean isSneaking = player.isSneaking();
+        boolean isSneaking = player.isShiftKeyDown();
 
-        //#if MC >= 11701
+        //#if MC >= 11700
         int playerX = player.getBlockX();
         int playerY = player.getBlockY();
         int playerZ = player.getBlockZ();
+        //#elseif MC >= 11600 && MC < 11700
+        //$$ int playerX = player.blockPosition().getX();
+        //$$ int playerY = player.blockPosition().getY();
+        //$$ int playerZ = player.blockPosition().getZ();
         //#else
-        //$$ int playerX = player.getBlockPos().getX();
-        //$$ int playerY = player.getBlockPos().getY();
-        //$$ int playerZ = player.getBlockPos().getZ();
+        //$$ int playerX = player.getCommandSenderBlockPosition().getX();
+        //$$ int playerY = player.getCommandSenderBlockPosition().getY();
+        //$$ int playerZ = player.getCommandSenderBlockPosition().getZ();
         //#endif
 
         boolean diggerX = FeatureToggleExtended.DIGGER_X.getBooleanValue() && !isSneaking && pos.getX() != playerX;
